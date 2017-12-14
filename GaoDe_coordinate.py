@@ -18,7 +18,7 @@ class GaoDE_coordinater(object):
         requset = urllib.request.Request(url=url, headers=headers)
         response = urllib.request.urlopen(requset)
         result_a = response.read().decode('utf-8')
-        print(result_a)
+        # print(result_a)
         result_a = result_a.split("(", 1)[1][:-1]
 
         result_a = json.loads(result_a)

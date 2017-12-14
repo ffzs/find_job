@@ -26,6 +26,7 @@ def get_job_details(job_url):
         job_sal = selector.xpath('//*[@id="r_content"]/div[1]/div/div[1]/div[1]/div[1]/text()')[0]
         company_name = selector.xpath('//*[@id="r_content"]/div[1]/div/div[1]/div[2]/text()')[0]
         company_address = selector.xpath('//*[@id="r_content"]/div[1]/div/div[2]/div/text()')[0]
+        job_code = job_url.split("/")[-2]
         about_main = BeautifulSoup(request.text, 'lxml').find_all('div', class_="about-main")
         if about_main:
             pass
@@ -42,6 +43,7 @@ def get_job_details(job_url):
         coordinate = GaoDE_coordinater.spider(a,company_address)
         company_condition = Tianyancha.crawl(a,company_name)
         total = {
+            "工作编号":job_code,
             "工作名称": job_name[0],
             "工资范围": job_sal,
             "公司名称": company_name,
