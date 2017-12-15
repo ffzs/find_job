@@ -10,7 +10,7 @@ class Tianyancha(object):
     def crawl(self,content):
         headers = {
                     'Referer': 'https://m.tianyancha.com/?jsid=SEM-BAIDU-PZPC-000000',
-                    'User-Agent': '"Mozilla/5.0 (Linux; Android 7.0; SM-G935P Build/NRD90M) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.92 Mobile Safari/537.36"'
+                    'User-Agent': 'Mozilla/5.0 (Linux; Android 7.0; SM-G935P Build/NRD90M) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.92 Mobile Safari/537.36'
                 }
 
         keyword =urllib.parse.quote(content)

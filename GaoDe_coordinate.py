@@ -23,8 +23,9 @@ class GaoDE_coordinater(object):
 
         result_a = json.loads(result_a)
 
-        if result_a["info"]=="OK":
-            return result_a["pois"][0]["location"]
+        if (result_a["info"]=="OK"):
+            if result_a["pois"]:
+                return result_a["pois"][0]["location"]
         else:
             return ""
 
