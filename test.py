@@ -13,7 +13,7 @@ headers = {
 }
 socket.setdefaulttimeout(3)
 url = "https://m.zhaopin.com/beijing-530/?keyword=python&order=0&maprange=3&ishome=0"
-ip_dict = {"http": "http://221.233.85.54:3128"}
+ip_dict = {"http": "http://27.46.74.26:9999"}
 response = requests.get(url,headers = headers,proxies=ip_dict)
 print(url,ip_dict,response)
 print(response.text)
