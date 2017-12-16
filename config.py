@@ -6,8 +6,8 @@ MONGO_DB="ZhiLian-"+CITY+"-"+KEYWORD
 MONGO_TABLE="ZhiLian-"+CITY+"-"+KEYWORD
 
 FANG_URL='localhost'
-FANG_DB="Zhufang-"+CITY
-FANG_TABLE="Zhufang-"+CITY
+FANG_DB="Zufang-"+CITY
+FANG_TABLE="Zufang-"+CITY
 
 
 USER_AGENTS = [

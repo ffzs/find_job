@@ -22,9 +22,13 @@ class DailiIP(object):
 
     def make_sure(self,ip_dict):
         socket.setdefaulttimeout(3)
-        url = 'http://lbs.amap.com/'
+        headers = {
+            'Referer': 'https://m.fang.com/zf/bj/?jhtype=zf',
+            'User-Agent': '"Mozilla/5.0 (Linux; Android 7.0; SM-G935P Build/NRD90M) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.92 Mobile Safari/537.36"'
+        }
+        url = 'https://m.fang.com/zf/bj/JHAGT_390078672_594f9d02661d1a722b01c9a4b97c2d1f_164852129.html?listtype=0&listsub=0'
         try:
-            response = requests.get(url, proxies=ip_dict)
+            response = requests.get(url, headers=headers,proxies=ip_dict)
             print(url,ip_dict,response)
             return True
         except Exception as e:
@@ -37,7 +41,7 @@ class DailiIP(object):
                 'User-Agent': '"Mozilla/5.0 (Linux; Android 7.0; SM-G935P Build/NRD90M) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.92 Mobile Safari/537.36"'
                     }
         # list =[]
-        url = "http://www.xicidaili.com/nn/" + str(page)
+        url = "http://www.xicidaili.com/wt/" + str(page)
         # ip_list = self.get_ip_list("ip_.txt")
         # print(ip_list)
         requset = requests.get(url=url, headers=headers)  #,proxies=json.loads(random.choice(ip_list))
@@ -50,7 +54,7 @@ class DailiIP(object):
             type = all_td[5].get_text().lower()
             ip_dict = {type:type+"://"+ip+":"+port}
             if self.make_sure(ip_dict):
-                with open("ip_GD.txt","a",encoding='utf-8') as f:
+                with open("ip_fang.txt","a",encoding='utf-8') as f:
                     jsoninfo = json.dumps(ip_dict)
                     # print(jsoninfo)
                     f.write(jsoninfo+"\n")
