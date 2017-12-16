@@ -113,7 +113,7 @@ def main(page):
 
 
 if __name__ == '__main__':
-    for i in range(148,600):
+    for i in range(362,1000):
         main(i)
 
 
