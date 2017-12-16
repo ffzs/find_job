@@ -1,19 +1,11 @@
 #-*-coding:utf-8-*-
+import json
 import random
 import pymongo
 import requests
 import time
 from bs4 import BeautifulSoup
 from config import *
-
-headers ={
-    'Upgrade-Insecure-Requests':'1',
-    'Host':'www.dianping.com',
-    'Connection':'keep-alive',
-    'Cookie':'_lxsdk_cuid=1605e56c7b779-0dd789ebd32644-b7a103e-100200-1605e56c7b9c8; _lxsdk=1605e56c7b779-0dd789ebd32644-b7a103e-100200-1605e56c7b9c8; _hc.v=12ed2395-1f5f-af9f-a3f2-cabf60795723.1513411234; s_ViewType=10; cy=2; _lx_utm=utm_source%3DBaidu%26utm_medium%3Dorganic; _lxsdk_s=1605e9b316d-624-bec-fa4%7C%7C139; _hc.s="\"12ed2395-1f5f-af9f-a3f2-cabf60795723.1513411234.1513415723.1513421446\""',
-    'User-Agent':'Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko',
-    'Referer':'http://www.dianping.com/beijing/food'
-}
 
 client = pymongo.MongoClient(DIANPING_URL,connect=False)
 db=client[DIANPING_DB]
@@ -24,6 +16,16 @@ def save_to_mongo(result):
         return True
     return False
 
+def get_ip_list(file):
+    file = open(file)
+    ip_list =[]
+    for line in file:
+        try:
+            ip_list.append(json.loads(line.strip()))
+        except:
+            pass
+    return ip_list
+
 def get_type_list(file):
     file = open(file,encoding="utf-8")
     type_list =[]
@@ -32,7 +34,14 @@ def get_type_list(file):
     return type_list
 
 def crwal(url):
-    # proxy = random.choice(IP_LIST)
+    headers = {
+        'Cookie': '_lxsdk_cuid=1605e56c7b779-0dd789ebd32644-b7a103e-100200-1605e56c7b9c8; _lxsdk=1605e56c7b779-0dd789ebd32644-b7a103e-100200-1605e56c7b9c8; _hc.v=12ed2395-1f5f-af9f-a3f2-cabf60795723.1513411234; s_ViewType=10; cy=2; _lx_utm=utm_source%3DBaidu%26utm_medium%3Dorganic; _lxsdk_s=1605fa02fa9-49d-7c0-d3f%7C%7C21',
+        'User-Agent': random.choice(USER_AGENTS),
+        'Referer': 'http://www.dianping.com/beijing/food'
+    }
+    ip_list = get_ip_list("ip_DZDP.txt")
+    proxy = random.choice(ip_list)
+    print(headers,proxy)
     responese = requests.get(url,headers=headers)
     html = responese.text
     soup = BeautifulSoup(html,"lxml")
@@ -78,7 +87,7 @@ def crwal(url):
 
 if __name__ == '__main__':
     type_list = get_type_list("dianping_meishi.txt")
-    for type in type_list[8:]:
+    for type in type_list[16:]:
         for page in range(1,51):
             url = "http:"+type+"o2p"+str(page)
             time.sleep(random.choice(range(1, 3)))
