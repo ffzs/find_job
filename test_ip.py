@@ -16,11 +16,12 @@ def get_ip_list(file):
     return ip_list
 
 def make_sure(ip_dict):
+    global my_ip_list
     headers = {
-        'Referer': 'https://m.fang.com/city/hotcity.jsp?city=bj',
-        'User-Agent': random.choice(USER_AGENTS)
+        'Referer': 'http://lbs.amap.com/console/show/picker',
+        'User-Agent': "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36"
     }
-    url = 'https://m.fang.com/zf/bj/'
+    url = 'http://lbs.amap.com/console/show/picker'
     try:
         response = requests.get(url, headers=headers,proxies=ip_dict)
         print(url,ip_dict,response)
@@ -30,21 +31,24 @@ def make_sure(ip_dict):
         return False
 
 def main(num):
-    if make_sure(IP_LIST[num]):
-        with open("ip_ftx.txt", "a", encoding='utf-8') as f:
-            jsoninfo = json.dumps(IP_LIST[num])
+    global my_ip_list
+    if make_sure(my_ip_list[num]):
+        with open("ip_GD.txt", "a", encoding='utf-8') as f:
+            jsoninfo = json.dumps(my_ip_list[num])
             print(jsoninfo)
             f.write(jsoninfo + "\n")
             f.close()
 
 
 if __name__ == '__main__':
-    # MY_ip_list = get_ip_list("ip_.txt")
-    # print(MY_ip_list)
-    l = len(IP_LIST)
-    groups = [x for x in range(0,l)]
-    pool = Pool()
-    pool.map(main, groups)
+    my_ip_list = get_ip_list("ip_gaode.txt")
+    print(my_ip_list)
+    l = len(my_ip_list)
+    for i in range(0,l):
+        main(i)
+    # groups = [x for x in range(0,l)]
+    # pool = Pool()
+    # pool.map(main, groups)
 
 
 
