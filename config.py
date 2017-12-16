@@ -5,6 +5,10 @@ MONGO_URL='localhost'
 MONGO_DB="ZhiLian-"+CITY+"-"+KEYWORD
 MONGO_TABLE="ZhiLian-"+CITY+"-"+KEYWORD
 
+FANG_URL='localhost'
+FANG_DB="Zhufang-"+CITY
+FANG_TABLE="Zhufang-"+CITY
+
 
 USER_AGENTS = [
     "Mozilla/5.0 (Linux; Android 7.0; SM-G935P Build/NRD90M) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.92 Mobile Safari/537.36",

@@ -1,19 +1,39 @@
-import socket
+import re
 
 import requests
+import json
 from bs4 import BeautifulSoup
-from lxml import etree
 
 headers = {
-    'Host':'m.zhaopin.com',
-    'Referer': "https://m.zhaopin.com/beijing-530/?keyword=python&order=0&maprange=3&ishome=0",
-    'Accept':"*/*",
-    'User-Agent': "Mozilla/5.0 (Linux; Android 7.0; SM-G935P Build/NRD90M) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.92 Mobile Safari/537.36",
-    'Cookie':"urlfrom2=121127146; adfcid2=other; adfbid2=0; dywea=95841923.2181405878508596700.1513168384.1513243856.1513301404.4; dywez=95841923.1513301404.4.4.dywecsr=other|dyweccn=121113803|dywecmd=cnt|dywectr=%E6%99%BA%E8%81%94%E6%8B%9B%E8%81%98; __utma=269921210.923620409.1513168386.1513243867.1513301407.4; __utmz=269921210.1513216118.2.2.utmcsr=other|utmccn=121113803|utmcmd=cnt|utmctr=%E6%99%BA%E8%81%94%E6%8B%9B%E8%81%98; _ga=GA1.2.923620409.1513168386; _gid=GA1.2.894664418.1513168386; urlfrom=121127146; adfcid=other; adfbid=0; dyweb=95841923.9.10.1513301404; dywec=95841923; __utmb=269921210.8.10.1513301407; __utmc=269921210; _gat=1; __utmt=1"
+    'referer':'https://m.fang.com/bj.html',
+    'user-agent':'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36'
 }
-socket.setdefaulttimeout(3)
-url = "https://m.zhaopin.com/beijing-530/?keyword=python&order=0&maprange=3&ishome=0"
-ip_dict = {"http": "http://27.46.74.26:9999"}
-response = requests.get(url,headers = headers,proxies=ip_dict)
-print(url,ip_dict,response)
-print(response.text)
+
+url = "https://m.fang.com/zf/?purpose=%D7%A1%D5%AC&jhtype=zf&city=%B1%B1%BE%A9&renttype=cz&c=zf&a=ajaxGetList&city=bj&r=0.41551867478289295&page=3"
+response = requests.get(url,headers=headers)
+html = response.content.decode("utf-8")
+all_li = BeautifulSoup(html,'lxml').find_all("li")
+for li in all_li:
+    branch_url = "http:"+li.find("a",class_="tongjihref")["href"]
+    title = li.find("h3").get_text().strip()
+    all_p = li.find_all("p")
+    rent_sale = li.find("span",class_="new").find("i").get_text()
+    house_type = all_p[len(all_p)-3].get_text().split(" ")[1]
+    # location = all_p[len(all_p)-2].find(re.compile("</span> (.*?) </p>",re.S))
+    location =re.findall(re.compile("</span> (.*?) </p>",re.S),str(all_p[len(all_p)-2]))[0]
+    # print(title,branch_url)
+    tag = li.find("div",class_="stag")
+    if tag:
+        tags =re.findall(re.compile('<span class="red-z">(.*?)</span>',re.S),str(li))
+        tag = ",".join(tags)
+    else:
+        tag = ""
+    total ={
+        "标题":title,
+        "租金":rent_sale,
+        "户型":house_type,
+        "地址":location,
+        "标签":tag,
+        "网址":branch_url,
+    }
+    print(total)
