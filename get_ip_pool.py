@@ -42,8 +42,6 @@ class DailiIP(object):
                     }
         # list =[]
         url = "http://www.xicidaili.com/wt/" + str(page)
-        # ip_list = self.get_ip_list("ip_.txt")
-        # print(ip_list)
         requset = requests.get(url=url, headers=headers)  #,proxies=json.loads(random.choice(ip_list))
         result_a = requset.text
         all_tr = BeautifulSoup(result_a,'lxml').find_all('tr')[1:]
