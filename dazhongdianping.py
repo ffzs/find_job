@@ -92,6 +92,7 @@ def get_ip_xila(page):
     return ip_list
 
 def crawl(url, ip_list):
+    global lock
     # socket.setdefaulttimeout(5)
     try:
         ip = random.choice(ip_list)
@@ -133,7 +134,7 @@ def crawl(url, ip_list):
                 #     service = txt.find("span", class_='comment-list').find_all("b")[2].get_text()
                 # else:
                 #     taste, environment, service = "", "", ""
-                all = {
+                total = {
                     "标题": title,
                     "网址": shop_url,
                     "星级": star,
@@ -146,7 +147,9 @@ def crawl(url, ip_list):
                 #     "环境": environment,
                 #     "服务": service,
                 }
-                save_to_mongo(all)
+                if lock.acquire():
+                    save_to_mongo(total)
+                    lock.release()
             except Exception as e:
                 print(e)
                 pass
@@ -160,7 +163,10 @@ def crawl(url, ip_list):
         crawl(url, ip_list)
     else:
         print(str(ip) + "可用###剩余ip数：" + str(len(ip_list)) + "###网络状态：" + str(response.status_code))
-        if response.status_code==200:
+        if response.status_code!=200:
+            if ip in ip_list:
+                ip_list.remove(ip)
+        else:
             with open("dz_ip.txt","a") as file:
                 file.write(json.dumps(ip)+"\n")
                 file.close()
@@ -187,9 +193,11 @@ if __name__ == '__main__':
         'Referer': 'http://www.kuaidaili.com/free/intr/',
         'User-Agent': random.choice(USER_AGENTS)
     }
-    IP_LIST =get_ip_text("ip_kuai.txt")
-    print(IP_LIST)
+    lock = threading.Lock()
+    IP_LIST =get_ip_text("ip_tested.txt")
     type_list = get_type_list("dianping_yule.txt")
+    type_list = list(reversed(type_list))
+    print(type_list)
     for type in type_list:
         for page in range(1, 51):
             url = "http:" + type + "o2p" + str(page)

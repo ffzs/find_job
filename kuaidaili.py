@@ -98,7 +98,7 @@ def test_ip(code, ip_lsit):
 
 def get_ip_text(ip_list):
     for ip in ip_list:
-        full_ip = {"http":ip}
+        full_ip = {"http":"http://"+ip}
         with open("ip_kuai.txt","a",encoding="utf-8") as f:
             f.write(json.dumps(full_ip)+"\n")
             f.close()
@@ -108,7 +108,7 @@ if __name__ == '__main__':
         'Referer': 'http://www.kuaidaili.com/free/intr/',
         'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; Win64; x64; Trident/7.0; Touch; LCJB; rv:11.0) like Gecko'
     }
-    IP_LIST =get_ip(40)
+    IP_LIST =get_ip(50)
     get_ip_text(IP_LIST)
     # for i in range(1,1000):
     #     t1 = threading.Thread(target=test_ip, args=(i, IP_LIST))
