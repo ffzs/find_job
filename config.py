@@ -11,7 +11,7 @@ FANG_TABLE="Zufang-"+CITY
 
 DIANPING_URL='localhost'
 DIANPING_DB="Dianping-"+CITY
-DIANPING_TABLE="Dianping-"+CITY
+DIANPING_TABLE="Dianping-yule"+CITY
 
 
 USER_AGENTS = [

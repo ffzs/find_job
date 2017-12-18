@@ -27,12 +27,31 @@ uas = [
 
 
 headers = {
-    'Cookie':'_lxsdk_cuid=1605e0182a1c8-0dcddc996964e2-5b452a1d-144000-1605e0182a1c8; _lxsdk=1605e0182a1c8-0dcddc996964e2-5b452a1d-144000-1605e0182a1c8; _hc.v=4fcafd03-8373-d150-6954-d7986b392b47.1513405645; s_ViewType=10; cy=2; _lx_utm=utm_source%3DBaidu%26utm_medium%3Dorganic; _lxsdk_s=16064b2eea8-a3f-e63-0fe%7C%7C30',
-    'Referer':'http://www.dianping.com/beijing/life',
+    # 'Cookie':'_lxsdk_cuid=1605e0182a1c8-0dcddc996964e2-5b452a1d-144000-1605e0182a1c8; _lxsdk=1605e0182a1c8-0dcddc996964e2-5b452a1d-144000-1605e0182a1c8; _hc.v=4fcafd03-8373-d150-6954-d7986b392b47.1513405645; s_ViewType=10; cy=2; _lx_utm=utm_source%3DBaidu%26utm_medium%3Dorganic; _lxsdk_s=16064b2eea8-a3f-e63-0fe%7C%7C30',
+    'Referer':'http://www.kuaidaili.com/free/intr/',
     'User-Agent':'Mozilla/5.0 (Windows NT 6.3; Win64; x64; Trident/7.0; Touch; LCJB; rv:11.0) like Gecko'
 }
 
-url = "http://www.dianping.com/tianjin/food"
-req =requests.get(url,headers=headers)
-print(req.text)
+
+test_url = "http://www.kuaidaili.com/free/intr/"
+html = requests.get(test_url, headers=headers).text
+oo = re.findall('no="", oo = (.*?);qo = "qo=', html)[0]
+ri = ''.join(re.findall('setTimeout\(\"\D+\((\d+)\)\"', html))
+a = html.split(";", 2)[-1]
+b = re.sub("0xff", "", a)
+s = re.findall("\d+", b)
+cookie = {'_ydclearance': YunDun.get_cookie(0, ri, oo, s)}
+headers = {
+    # 'Cookie':'_lxsdk_cuid=1605e0182a1c8-0dcddc996964e2-5b452a1d-144000-1605e0182a1c8; _lxsdk=1605e0182a1c8-0dcddc996964e2-5b452a1d-144000-1605e0182a1c8; _hc.v=4fcafd03-8373-d150-6954-d7986b392b47.1513405645; s_ViewType=10; cy=2; _lx_utm=utm_source%3DBaidu%26utm_medium%3Dorganic; _lxsdk_s=16064b2eea8-a3f-e63-0fe%7C%7C30',
+    'Referer':'http://www.kuaidaili.com/free/intr/',
+    'User-Agent':'Mozilla/5.0 (Windows NT 6.3; Win64; x64; Trident/7.0; Touch; LCJB; rv:11.0) like Gecko'
+}
+cookies = cookie
+test_url = "http://www.kuaidaili.com/free/intr/"
+html = requests.get(test_url, headers=headers,cookies=cookie).text
+
+print(html)
+
+
+
 

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import datetime
+import json
 import re
 import random
 import threading
@@ -22,7 +23,10 @@ uas = [
     ]
 
 def get_cookie():
-    global headers
+    headers = {
+        'Referer': 'http://www.kuaidaili.com/free/intr/',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; Win64; x64; Trident/7.0; Touch; LCJB; rv:11.0) like Gecko'
+    }
     test_url ="http://www.kuaidaili.com/free/intr/"
     html = requests.get(test_url,headers=headers).text
     oo = re.findall('no="", oo = (.*?);qo = "qo=', html)[0]
@@ -35,6 +39,7 @@ def get_cookie():
 
 def get_ip(page):
     cookies = get_cookie()
+    print(cookies)
     ip_list=[]
     for page in range(1,page):
         print("-------获取第"+str(page)+"页ip--------")
@@ -72,7 +77,7 @@ def test_ip(code, ip_lsit):
         hz_url = "http://www.dianping.com/beijing/food"
         hz_r = requests.get(hz_url, headers=headers2, proxies=proxies)
         if hz_r.status_code != "200":
-            False
+            pass
     except Exception as e:
         print(e)
         if not ip_lsit:
@@ -91,16 +96,24 @@ def test_ip(code, ip_lsit):
         date = datetime.datetime.now().strftime('%H:%M:%S')
         print ("第%s次测试%s 状态[%s] 测试时间 [%s]： (剩余可用代理IP数：%s)" % (code, hz_r,date, ip, len(ip_lsit)))
 
+def get_ip_text(ip_list):
+    for ip in ip_list:
+        full_ip = {"http":ip}
+        with open("ip_kuai.txt","a",encoding="utf-8") as f:
+            f.write(json.dumps(full_ip)+"\n")
+            f.close()
+
 if __name__ == '__main__':
     headers = {
         'Referer': 'http://www.kuaidaili.com/free/intr/',
-        'User-Agent': random.choice(USER_AGENTS)
+        'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; Win64; x64; Trident/7.0; Touch; LCJB; rv:11.0) like Gecko'
     }
     IP_LIST =get_ip(40)
-    for i in range(1,1000):
-        t1 = threading.Thread(target=test_ip, args=(i, IP_LIST))
-        t1.start()
-        time.sleep(1)
+    get_ip_text(IP_LIST)
+    # for i in range(1,1000):
+    #     t1 = threading.Thread(target=test_ip, args=(i, IP_LIST))
+    #     t1.start()
+    #     time.sleep(1)
 
 
 

@@ -91,10 +91,10 @@ def get_ip_xila(page):
         time.sleep(random.choice(range(2,4)))
     return ip_list
 
-def crawl(url, ip_lsit):
+def crawl(url, ip_list):
     # socket.setdefaulttimeout(5)
     try:
-        ip = random.choice(ip_lsit)
+        ip = random.choice(ip_list)
     except:
         return False
     else:
@@ -107,8 +107,8 @@ def crawl(url, ip_lsit):
                     "User-Agent": random.choice(uas),
                     }
     try:
-        responese = requests.get(url, headers=headers2,proxies=proxies)
-        html = responese.text
+        response = requests.get(url, headers=headers2,proxies=proxies)
+        html = response.text
         soup = BeautifulSoup(html, "lxml")
         all_txt = soup.find_all("div", class_="txt")
         for txt in all_txt:
@@ -127,12 +127,12 @@ def crawl(url, ip_lsit):
                 food_type = txt.find_all("span", class_="tag")[0].get_text()
                 location = txt.find_all("span", class_="tag")[1].get_text()
                 address = txt.find("span", class_="addr").get_text()
-                if star != "0":
-                    taste = txt.find("span", class_='comment-list').find_all("b")[0].get_text()
-                    environment = txt.find("span", class_='comment-list').find_all("b")[1].get_text()
-                    service = txt.find("span", class_='comment-list').find_all("b")[2].get_text()
-                else:
-                    taste, environment, service = "", "", ""
+                # if star != "0":
+                #     taste = txt.find("span", class_='comment-list').find_all("b")[0].get_text()
+                #     environment = txt.find("span", class_='comment-list').find_all("b")[1].get_text()
+                #     service = txt.find("span", class_='comment-list').find_all("b")[2].get_text()
+                # else:
+                #     taste, environment, service = "", "", ""
                 all = {
                     "标题": title,
                     "网址": shop_url,
@@ -142,28 +142,28 @@ def crawl(url, ip_lsit):
                     "品类": food_type,
                     "区位": location,
                     "地址": address,
-                    "口味": taste,
-                    "环境": environment,
-                    "服务": service,
+                #     "口味": taste,
+                #     "环境": environment,
+                #     "服务": service,
                 }
                 save_to_mongo(all)
-            except:
+            except Exception as e:
+                print(e)
                 pass
 
     except Exception:
-        print(str(ip)+"不可用,剩余ip数："+str(len(ip_lsit)))
-        if not ip_lsit:
+        print(str(ip)+"不可用,剩余ip数："+str(len(ip_list)))
+        if not ip_list:
             sys.exit()
-        if ip in ip_lsit:
-            ip_lsit.remove(ip)
-        crawl(url, ip_lsit)
+        if ip in ip_list:
+            ip_list.remove(ip)
+        crawl(url, ip_list)
     else:
-        print(str(ip) + "可用,剩余ip数：" + str(len(ip_lsit))+str(responese.status_code))
-        if responese.status_code==200:
+        print(str(ip) + "可用###剩余ip数：" + str(len(ip_list)) + "###网络状态：" + str(response.status_code))
+        if response.status_code==200:
             with open("dz_ip.txt","a") as file:
                 file.write(json.dumps(ip)+"\n")
                 file.close()
-
 
 def get_type_list(file):
     file = open(file,encoding="utf-8")
@@ -172,14 +172,25 @@ def get_type_list(file):
         type_list.append(line.strip().split(":")[-1])
     return type_list
 
+def get_ip_text(file):
+    file = open(file)
+    ip_list =[]
+    for line in file:
+        try:
+            ip_list.append(json.loads(line.strip()))
+        except:
+            pass
+    return ip_list
+
 if __name__ == '__main__':
     headers = {
         'Referer': 'http://www.kuaidaili.com/free/intr/',
         'User-Agent': random.choice(USER_AGENTS)
     }
-    IP_LIST =get_ip_xila(21)
-    type_list = get_type_list("dianping_meishi.txt")
-    for type in type_list[16:]:
+    IP_LIST =get_ip_text("ip_kuai.txt")
+    print(IP_LIST)
+    type_list = get_type_list("dianping_yule.txt")
+    for type in type_list:
         for page in range(1, 51):
             url = "http:" + type + "o2p" + str(page)
             t1 = threading.Thread(target=crawl, args=(url, IP_LIST))
