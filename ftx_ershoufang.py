@@ -9,6 +9,7 @@ from bs4 import BeautifulSoup
 from config import *
 import re
 import pymongo
+import socket
 from GaoDe_coordinate import GaoDE_coordinater
 
 client = pymongo.MongoClient(FANG_URL,connect=False)
@@ -22,6 +23,7 @@ def save_to_mongo(result):
     return False
 
 def get_detials(total,ip_list):
+    global lock
     headers = {
         'Referer': 'https://m.fang.com/zf/bj/?jhtype=zf',
         'User-Agent': random.choice(USER_AGENTS)
@@ -48,7 +50,9 @@ def get_detials(total,ip_list):
             "装修":decoration,
         }
         information = {**total, **detials}
-        save_to_mongo(information)
+        if lock.acquire():
+            save_to_mongo(information)
+            lock.release()
     except Exception as e:
         print(e)
         print(str(ip) + "不可用,剩余ip数：" + str(len(ip_list)))
@@ -64,8 +68,8 @@ def get_detials(total,ip_list):
                 file.write(json.dumps(ip) + "\n")
                 file.close()
 
-
 def get_total(url,ip_list):
+    socket.setdefaulttimeout(5)
     try:
         ip = random.choice(ip_list)
     except:
@@ -107,7 +111,9 @@ def get_total(url,ip_list):
                     "标签": tag,
                     "网址": branch_url,
                 }
-                get_detials(total, ip_list)
+                t1 = threading.Thread(target=get_detials, args=(total, ip_list))
+                t1.start()
+                time.sleep(1)
             except Exception as e:
                 print(e)
     except Exception:
@@ -120,15 +126,13 @@ def get_total(url,ip_list):
     else:
         print(str(ip) + "可用###剩余ip数：" + str(len(ip_list)) + "###网络状态："+str(response.status_code))
         if response.status_code == 200:
-            with open("ftx_ip.txt", "a") as file:
+            with open("ftx_.txt", "a") as file:
                 file.write(json.dumps(ip) + "\n")
                 file.close()
 
-
-
 def get_ip_xila(page):
     headers3 = {
-        'Referer': 'http://www.xicidaili.com/nt',
+        'Referer': 'http://www.xicidaili.com/nn',
         'User-Agent': random.choice(USER_AGENTS)
     }
     ip_list=[]
@@ -148,14 +152,27 @@ def get_ip_xila(page):
         time.sleep(random.choice(range(2,4)))
     return ip_list
 
+def get_ip_text(file):
+    file = open(file)
+    ip_list =[]
+    for line in file:
+        try:
+            ip_list.append(json.loads(line.strip()))
+        except:
+            pass
+    return ip_list
+
 if __name__ == '__main__':
-    IP_LIST = get_ip_xila(21)
-    for page in range(362,1000):
+    # IP_LIST = get_ip_xila(21)
+    IP_LIST = get_ip_text("ftx_ip.txt")
+    lock =threading.Lock()
+    print(IP_LIST)
+    for page in range(3426,6000):
+        print("---------爬取第"+str(page)+"页------------")
         url = "https://m.fang.com/zf/?purpose=%D7%A1%D5%AC&jhtype=zf&city=%B1%B1%BE%A9&renttype=cz&c=zf&a=ajaxGetList&city=bj&r=0.41551867478289295&page=" + str(
             page)
-        t1 = threading.Thread(target=get_total, args=(url, IP_LIST))
-        t1.start()
-        time.sleep(random.choice(range(1, 3)))
+        get_total(url, IP_LIST)
+
 
 
 
