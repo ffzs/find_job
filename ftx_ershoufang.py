@@ -113,7 +113,7 @@ def get_total(url,ip_list):
                 }
                 t1 = threading.Thread(target=get_detials, args=(total, ip_list))
                 t1.start()
-                time.sleep(1)
+                time.sleep(0.3)
             except Exception as e:
                 print(e)
     except Exception:
@@ -167,7 +167,7 @@ if __name__ == '__main__':
     IP_LIST = get_ip_text("ftx_ip.txt")
     lock =threading.Lock()
     print(IP_LIST)
-    for page in range(3426,6000):
+    for page in range(7239,8000):
         print("---------爬取第"+str(page)+"页------------")
         url = "https://m.fang.com/zf/?purpose=%D7%A1%D5%AC&jhtype=zf&city=%B1%B1%BE%A9&renttype=cz&c=zf&a=ajaxGetList&city=bj&r=0.41551867478289295&page=" + str(
             page)
